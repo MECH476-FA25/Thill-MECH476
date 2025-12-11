@@ -89,6 +89,10 @@ ink-to-information ratio. Ugly plots are okay when you are just exploring data.
 
 ```{r ozone-time}
 # create basic time series using ggplot2 package
+
+ggplot(ozone_data, aes(x = datetime, y = ozone_ppm)) +
+  geom_line()
+
 ```
 
 # Question 2: Base R equivalent
