@@ -162,7 +162,7 @@ In addition to assigning a plot as a `ggplot` object, one can also assign
 aspects of the figure such as axis labels and titles to an object for later 
 use. For example: 
 
-```{r ozone-labels, eval=FALSE}
+```{r ozone-labels,}
 # create new object with ggplot labels 
 ozone_labels <- labs(x = "Time of Measurement (YYYY-MM-DD HH:MM:SS)",
                      y = "Ozone Concentration (ppm)",
@@ -228,6 +228,11 @@ ozone_ppm_over_time
 Based on the time series, do you see any seasonal pattern for higher levels
 of ozone? Describe what you see.
 
+~~~
+
+Based on all the data being displayed across the graphs made we can see an abvious trend of more ozone concentrations happening durring the warmer months such as july and august with a general decline towards the later half of the data series. this comes from the tempertires cooling downa nd less being trapped in the atmosphere. another part to mention is a huge spike in early July and this can probably be attributed to the 4th of July with has a large amount of fireworks that cause damage to the Ozone at a significantly increased volume as compared to a typical day.
+~~~
+
 # Question 9: proportion
 
 What proportion of ozone measurements exceed the EPA guidelines? Instead of
@@ -236,6 +241,9 @@ the corresponding proportion in one line of code.
 
 ```{r ozone-perc}
 # calculate proportion of ozone measurements that exceed 0.070 ppm 
+prop_ozone_exceed <- mean(ozone_data$ozone_ppm > 0.070)
+
+paste0("Proportion Exceeding Limit: ", round(prop_ozone_exceed * 100, 2), "%")
 ```
 
 # Question 10: `ggplot2` extensions
@@ -246,6 +254,11 @@ to be aware of them. Which theme would be appropriate for your own research or
 senior project, and why? How would you use it? Briefly describe your data
 and why the extension would improve the data visualization and communication.
 
+~~~
+
+The most usefull extension that I was able to find for my senior design project was tidyterra as my project has a lot to do with data acquisition and manipulation of ground and crop scans of a corn field at various growing stages. and the ability to stitch all the data togther seamlessly into an elevation map that can be compared to one another would have been one possible way we could have solved our problem.
+
+~~~
 \newpage
 
 # Appendix
