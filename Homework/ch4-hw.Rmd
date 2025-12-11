@@ -101,6 +101,13 @@ For comparison, what function could you use to create a time series of these
 data in base R? How does the syntax of this function compare to that of
 `ggplot()`?
 
+``` {r Question 2}
+
+with(ozone_data, plot(datetime, ozone_ppm))
+
+#The syntax of this command is different from that of ggplot() in that it takes on a #multiple user define inputs. These inputs are reburied top get the same detailed level of #graph the ggplot produces. but can be called with a single call where ggplot dose not. 
+
+```
 # Question 3: `ggplot` object
 
 Excluding the geom, assign the plot from Question 1 as a `ggplot` object with 
@@ -108,6 +115,9 @@ a descriptive name.
 
 ```{r ozone-object}
 # create base layer of ozone time series (no geom) and save to object
+
+ozoneppm_over_time <- ggplot(ozone_data, aes(x = datetime, y = ozone_ppm))
+
 ```
 
 # Question 4: `geom`
@@ -118,6 +128,11 @@ in the `ggplot` object in Question 3.
 
 ```{r ozone-geom}
 # add layer to ggplot object
+
+ozoneppm_over_time <- ozoneppm_over_time +
+                        geom_point()
+ozoneppm_over_time
+
 ```
 
 # Question 5: `ggplot` layers
