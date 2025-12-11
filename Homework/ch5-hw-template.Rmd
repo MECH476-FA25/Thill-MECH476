@@ -1,0 +1,187 @@
+---
+title: 'MECH481A6: Engineering Data Analysis in R'
+subtitle: 'Chapter 5 Homework: Exploring Univariate Data' 
+author: 'Student Name'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+```{r global-options, include = FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = "../figs/",
+                      echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+# Grading
+
+We will grade the **knitted** PDF or HTML document from within your private
+GitHub repository. Remember to make regular, small commits (e.g., at least one
+commit per question) to save your work. We will grade the latest knit, as long
+as it occurs *before* the start of the class in which we advance to the next
+chapter. As always, reach out with questions via GitHub Issues or during
+office hours.
+
+# Data
+
+You are probably sick of seeing the ozone data, but there's still more to
+do with the file. Ozone concentration measurement is considered univariate,
+thus we can use basic exploratory data analysis approaches to examine the data.
+
+# Preparation
+
+Load the necessary R packages into your R session. 
+
+```{r packages, message=FALSE}
+# load packages
+```
+
+Recreate the pipe of `dplyr` functions that you used to import the data, select
+and rename the variables listed below, drop missing observations, and assign the
+output with a good name.
+
+- `sample_measurement` renamed as `ozone_ppm` (ozone measurement in ppm)
+- `datetime` (date in YYYY-MM-DD format and time of measurement in HH:MM:SS)
+
+```{r import-data, message=FALSE}
+# ozone: import, select, drop missing observations, rename
+```
+
+Check that the data imported correctly.
+
+```{r data-check}
+# examine dataframe object 
+```
+
+\newpage
+
+# Chapter 5 Homework: Exploring Univariate Data
+
+Through Question 5, you will use all of the available ozone measurements
+from January 2019 through January 2020. Starting in Question 6, you will use
+a subset of the dataset: ozone concentration measurements on July 4, 2019.
+
+## Question 1: Definitions
+
+Guess the location, dispersion, and shape of ozone concentration data, based on
+the definitions of each described in the coursebook. No code needed; just use
+your intuition. For shape, take a look at the coursebook appendix on reference
+distributions.
+
+## Question 2: Quartiles
+
+Calculate the quartiles of `ozone_ppm`. What is the minimum? Maximum? Median? 
+
+```{r ozone-quartiles}
+# calculate quantiles of ozone concentration
+```
+
+### Extra Credit
+
+Create [a similar table](https://smogdr.github.io/edar_coursebook/eda1.html#descriptive-statistics) for `ozone_ppm`. Hint: You will need to investigate table
+options in the `knitr` package.
+
+\newpage
+
+## Question 3: Cumulative Distribution Plot
+
+Using either relevant `ggplot2` `geom` option, create a cumulative distribution
+plot of `ozone_ppm`. Tweak the axis ranges for optimal data representation,
+using `scale_*_continuous()` with `breaks =` and `minor_breaks =` arguments.
+Add axis labels, title, subtitle, and theme. 
+
+```{r ozone-cd}
+# plot cumulative distribution of ozone concentration
+```
+
+\newpage
+
+## Question 4: Histogram
+
+Create a histogram of `ozone_ppm`. Within the `geom`, mess with the number of
+bins (e.g., 20, 50, 75, 100, 200) to explore the true shape and granularity of
+the data. Match the plot style (e.g., title, subtitle, axis labels, theme) you
+chose in Question 3, with the relevant adjustments such as "Histogram" 
+instead of "Cumulative Distribution Plot".
+
+```{r ozone-hist}
+# create histogram of ozone concentration
+```
+
+### Question 5: Concept
+
+What mathematical concept is a histogram (Q4) attempting to visualize? 
+
+### Question 6: Distribution
+
+Based on the histogram (Q4), does ozone concentration appear to be normally
+distributed? 
+
+### Question 7: Outliers
+
+Based on the histogram (Q4), do you see any possible outliers? Skewness? How
+might this affect the spread and central tendency?
+
+\newpage
+
+## Question 8: Boxplot
+
+Generate a boxplot of ozone concentration on the y-axis with a title, subtitle,
+y-axis label, and theme consistent with the style of the previous two plots. 
+Use quotes (`""`) as the `x` arguments within the calls to the aesthetic and 
+labels to remove the x-axis scale and label.
+
+```{r ozone-boxplot}
+# create ozone boxplot
+```
+
+\newpage
+
+# Subset Data
+
+Use the following code to create a dataframe for use in the remaining questions.
+These ozone concentration measurements were taken on July 4, 2019 in Fort
+Collins, CO. This code detects certain characters with the `datetime` object and
+filters to observations containing those characters. There are other ways this 
+could have been done (e.g., `dplyr::filter()` with `%in%` operator).
+
+```{r ozone-day}
+# create subset of data with only one day to examine daily pattern
+# I did not ask you to code this because we have not discussed dates or stringr
+# You need to uncomment the below three lines and run it; check object names
+# ozone_day <- ozone_data %>% 
+#   dplyr::filter(stringr::str_detect(string = datetime,
+#                                     pattern = "2019-07-04"))
+```
+
+## Question 9: Autocorrelation Plot
+
+Define autocorrelation as it relates to ozone concentration measurement. 
+
+Create an autocorrelation plot of ozone concentration, using `stats::acf()` and
+include axis labels and title. Describe what you see based on the features of
+interest outlined in the coursebook.
+
+```{r ozone-acf}
+# create autocorrelation plot with ozone_day df
+```
+
+\newpage
+
+## Question 10: Parial Autocorrelation Plot
+
+Define partial autocorrelation as it relates to ozone concentration measurement.
+
+Now create a partial autocorrelation plot of day ozone concentration with axis
+labels. Describe what you see. How does this compare to the autocorrelation
+plot in the previous question?
+
+```{r ozone-part-acf}
+# create partial autocorrelation plot
+```
+
+\newpage
+
+# Appendix
+
+```{r show_code, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+```

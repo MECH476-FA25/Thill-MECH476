@@ -1,0 +1,97 @@
+---
+title: 'MECH481A6: Engineering Data Analysis in R'
+subtitle: 'Chapter 8 Homework: Functional Programming' 
+author: 'Student Name'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+```{r global-options, include=FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Load packages
+
+```{r load-packages, message=FALSE}
+# load packages for current session
+library(tidyverse) 
+library(lubridate)
+library(gridExtra) # needed for extra credit question
+```
+
+# Chapter 8 Homework
+
+This homework will give you practice at writing functions, mapping functions, and cleaning/plotting data. 
+
+When a question asks you to make a plot, remember to set a theme, title, 
+subtitle, labels, colors, etc. It is up to you how to personalize your plots, 
+but put in some effort and make the plotting approach consistent throughout
+the document. For example, you could use the same theme for all plots. I also
+like to use the subtitle as a place for the main summary for the viewer.
+
+\newpage
+
+## Question 1
+
+Write a **function** named `sort_abs()`that takes a vector of numbers as input, calculates the absolute values of each entry, and then outputs that vector sorted from smallest to largest value. 
+
+```{r sort-baseR, include=FALSE}
+
+#create a function named `sort_abs()`
+
+```
+
+## Question 2
+
+Modify the function `import.w.name()` to import the “date” part of the filename (in addition to the sensor ID). Create a new column variable called “date_created” with this information. Hint: you will need to apply a regex pattern like this: `"(?<=_)[:alnum:]+(?=\\.)"`
+
+```{r import.w.name2, include=FALSE}
+# create an object that tracks the file names and file paths
+# see the coursebook for details
+
+
+# modify the import.w.name function
+# hint: start with what is provided in the coursebook
+
+
+
+```
+
+## Question 3
+This question is designed to give you practice at data cleaning. First, create a pipeline that (1) uses `purrr::map_dfr()` and `import.w.name()` to read in  all the the PurpleAir data files into a single data frame. Call that new data frame `PA_data_merged`. (2) Then, have the pipeline convert the character vector UTCDateTime into new column of class POSIXct using a `lubridate::` function (note - not all the indices in UTCDateTime will parse correctly; we will address this in Question 4). Finally, (3) finish the pipeline by renaming the `current_temp_f` and `current_humidity` column names to shorter names.
+
+```{r map-dplyr-pipe, warning=FALSE, message=FALSE, include=FALSE}
+# the map code is provided in the coursebook
+
+
+```
+
+## Question 4
+Can you find the 3 indices of UTCDateTime in PA_data_merged that failed to parse with lubridate::? Hint: use the `is.na()` function nested wihtin `which()` to return the row numbers in question. Both of these are baseR functions. Once you have the row entries identified you can `View()` them with a call to `slice()`.: normal entries in UTCDateTime are all the same number of characters nchar() or entries that failed to parse in the new date column will have NA associated with them.
+```{r find-NAs, include=FALSE}
+
+
+```
+
+## Question 5
+Create a series of EDA plots (cdf, boxplot, histogram, time series) of the `pm2_5_atm` variable from `PA_data_merged`. Use `color =` or `fill =` as an aesthetic to differentiate each sensor by `sensor_ID`. Do the data have a central tendency? Do they appear normally distributed? Do events show up in the time series?  Note: the variable `pm2_5_atm` is the concentration of fine particulate matter air pollution in micrograms per cubic meter ($\mu g/m^3$).
+
+### Extra Credit
+Create the EDA figures within a single plot (hint: use the `gridExtra::` package).  Show only one legend and place it within the body of the CDF plot (hint: to move or remove a legend, add a call that uses a version of `theme(legend.position = ...)`).
+
+```{r PA-EDA-plots, message=FALSE, warning=FALSE, include=FALSE}
+#cdf plot
+
+
+#boxplot
+
+
+#time-series plot
+
+
+#histogram
+
+
+```

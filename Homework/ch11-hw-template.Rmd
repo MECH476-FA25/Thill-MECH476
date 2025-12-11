@@ -1,0 +1,103 @@
+---
+title: 'MECH481A6: Engineering Data Analysis in R'
+subtitle: 'Chapter 11 Homework: Modeling' 
+author: 'Student Name'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+```{r global-options, include=FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Load packages
+
+```{r load-packages, message=FALSE}
+# load packages for current session
+library(tidyverse) 
+library(gridExtra) 
+```
+
+# Chapter 11 Homework
+
+This homework will give you experience with OLS linear models and testing their assumptions.  
+
+For this first problem set, we will examine issues of ***collinearity among predictor variables*** when fitting an OLS model with two variables. As you recall, assumption 3 from OLS regression requires there be no *collinearity* among predictor variables (the $X_i$'s) in a linear model.  The reason is that the model struggles to assign the correct $\beta_i$ values to each predictor when they are strongly correlated.   
+
+## Question 1
+Fit a series of three linear models on the `bodysize.csv` data frame using `lm()` with `height` as the dependent variable:  
+  1. Model 1: use `waist` as the independent predictor variable:  
+        - `formula = height ~ waist`   
+  2. Model 2: use `mass` as the independent predictor variable:  
+        - `formula = height ~ mass`  
+  3. Model 3: use `mass + waist` as a linear combination of predictor variables:  
+        - `formula = waist + mass`  
+    
+Report the coefficients for each of these models.  What happens to the sign and magnitude of the `mass` and `waist` coefficients when the two variables are included together?  Contrast that with the coefficients when they are used alone.
+
+Evaluate assumption 3 about whether there is collinearity among these variables.  Do you trust the coefficients from model 3 after having seen the individual coefficients reported in models 1 and 2?
+
+
+```{r ch11-homework-q1, echo=FALSE, include=FALSE}
+
+```
+
+## Question 2
+Create a new variable in the `bodysize` data frame using `dplyr::mutate`. Call this variable `volume` and make it equal to $waist^2*height$.  Use this new variable to predict `mass`.  
+
+```{r ch11-homework-q2}
+
+
+
+
+```
+
+Does this variable explain more of the variance in `mass` from the NHANES data? How do you know? (hint: there is both *process* and *quantitative* proof here)
+
+```{r ch11-homework-q2a}
+
+
+```
+
+Create a scatterplot of `mass` vs. `volume` to examine the fit.  Draw a fit line using `geom_smooth()`.
+
+```{r ch11-homework-q2b}
+
+
+```
+
+## Question 3
+Load the `cal_aod.csv` data file and fit a linear model with `aeronet` as the independent variable and `AMOD` as the independent variable. 
+```{r ch11-homework-q3}
+# load data
+
+
+```
+
+Evaluate model assumptions 4-7 from the coursebook.  Are all these assumptions valid? 
+
+```{r ch11-homework-q3a}
+#assumption 4: mean of residuals is zero
+
+
+```
+
+```{r ch11-homework-q3b}
+#assumption 5: residuals are normally distributed
+
+
+```
+
+```{r ch11-homework-q3c}
+#assumption 6: the error term is homoscedastic
+
+
+```
+
+```{r ch11-homework-q3d}
+#assumption 7: no autocorrelation among residuals
+
+
+```

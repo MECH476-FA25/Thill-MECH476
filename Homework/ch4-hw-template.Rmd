@@ -1,0 +1,196 @@
+---
+title: 'MECH481A6: Engineering Data Analysis in R'
+subtitle: 'Chapter 4 Homework: Visualizing Ozone Data' 
+author: 'Student Name'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+*Note*: If you haven't installed $LaTex$, change the output mode in the above
+YAML to `html_document` for ease of knitting and homework submission. 
+
+This R Markdown (.Rmd) file is a template for your Chapter 4 Homework. Do 
+everything within this file. Make it your own, but be careful not to change
+the code-figure-text integration I set up with the code appendix and the 
+global options. If you have used R Markdown before and are comfortable with the
+extra options, feel free to customize to your heart's desire. In the end,
+we will grade the **knitted** PDF or HTML document from within your private
+GitHub repository. Remember to make regular, small commits (e.g., at least one
+commit per question) to save your work. We will grade the latest knit, as long
+as it occurs *before* the start of the class in which we advance to the next
+chapter. As always, reach out with questions via GitHub Issues or during
+office hours.
+
+```{r global-options, include = FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = "../figs/",
+                      echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+# Ozone data
+
+The corresponding data file (.csv) contains *hourly* ozone data from two sites
+in Fort Collins. You should already have this file in your `/data` folder.
+
+# Preparation
+
+You completed the following steps in your Chapter 3 Homework. If correct, you
+should copy-paste the code into this R Markdown document; FYI, you cannot 
+`source()` R Markdown files for use of its output in another file because they
+are intended to be self-contained and reproducible. Therefore, you need to 
+copy-paste parts of your Chapter 3 Homework into this document and adjust 
+the pathnames, if needed.
+
+## Load R packages
+
+```{r load-packages}
+# load packages for current R session
+```
+
+## Import, select, and clean data
+
+Recreate the pipe of `dplyr` functions that you used to import the data, select
+and rename the variables listed below, drop missing observations, and assign
+the output as a `tibble` (*not in that particular order*).
+
+- `sample_measurement` renamed as `ozone_ppm` (ozone measurement in ppm)
+- `datetime` (date in YYYY-MM-DD format and time of measurement in HH:MM:SS)
+
+```{r import-data}
+# ozone: import, select, drop missing observations, rename
+```
+
+## Examine Data
+
+Examine the structure and contents of the dataframe to confirm the file
+imported and was manipulated properly. 
+
+```{r missing-data}
+# examine dataframe object 
+```
+
+# Question 1: `ggplot2` time series
+
+Using `ggplot` and the corresponding `geom`, create a time series of ozone
+measurement across time. Warning: This plot will have a very poor
+ink-to-information ratio. Ugly plots are okay when you are just exploring data.
+
+```{r ozone-time}
+# create basic time series using ggplot2 package
+```
+
+# Question 2: Base R equivalent
+
+For comparison, what function could you use to create a time series of these
+data in base R? How does the syntax of this function compare to that of
+`ggplot()`?
+
+# Question 3: `ggplot` object
+
+Excluding the geom, assign the plot from Question 1 as a `ggplot` object with 
+a descriptive name.
+
+```{r ozone-object}
+# create base layer of ozone time series (no geom) and save to object
+```
+
+# Question 4: `geom`
+
+Now, `geom_point()` to the `ggplot` object using the following syntax:
+`object_name + geom_point()`. Remember, you have already defined the `aes()`
+in the `ggplot` object in Question 3.
+
+```{r ozone-geom}
+# add layer to ggplot object
+```
+
+# Question 5: `ggplot` layers
+
+Call and examine object within the R Markdown, Console, or using View. How
+many layers does this `ggplot` object contain? Why?
+
+# Question 6: theme
+
+Next, add the `ggplot2` theme  of your choice to the `ggplot` object with
+`theme_*()` function prefix.
+
+```{r ozone-theme}
+# add theme to ggplot object
+```
+
+# Question 7: additions
+
+In addition to assigning a plot as a `ggplot` object, one can also assign 
+aspects of the figure such as axis labels and titles to an object for later 
+use. For example: 
+
+```{r ozone-labels, eval=FALSE}
+# create new object with ggplot labels 
+ozone_labels <- labs(x = "Time of Measurement (YYYY-MM-DD HH:MM:SS)",
+                     y = "Ozone Concentration (ppm)",
+                     title = "Hourly Ozone Measurements in Fort Collins, CO")
+```
+
+Using this technique and the same additive approach (`ggplot_object + ... + title`) from Questions 5 and 6, add a title and revise the axis labels.
+
+```{r ozone-time-label}
+# add title and axis labels to time series
+```
+
+# Question 7: ways to see more granularity  
+
+The time series from the previous questions does not look nice. It is hard
+to discern granular patterns in the data because of their sheer density; there
+are too many hourly measurements over time. We could look at the data on 
+different time scales, but, because we have not discussed how to manipulate
+dates and times, we will instead focus first on adding transparency to the data 
+points using the `alpha = ` aesthetic.  Try recreating the time-series plot with 
+`alpha = 0.2`.
+
+```{r ozone-time-label-alpha}
+# add alpha aesthetic to the geom_point()
+
+```
+
+Alternatively, we could examine just the ozone measurements that
+exceed the threshold (0.070 ppm) set by the Environmental Protection Agency.
+Filter the dataset to the ozone levels exceeding 0.070 ppm, and use these data
+to construct a time series plot with time of measurement on the x-axis and 
+ozone concentration measurement on the y-axis. Remember to add the relevant
+`geom`, title, subtitle, axis labels, and your choice of theme. 
+
+```{r high-ozone-plot}
+# filter data to ozone concentration measurements exceeding 0.070 ppm 
+
+# time series of high ozone measurements
+```
+
+# Question 8: seasonality
+
+Based on the time series, do you see any seasonal pattern for higher levels
+of ozone? Describe what you see.
+
+# Question 9: proportion
+
+What proportion of ozone measurements exceed the EPA guidelines? Instead of
+plugging in the actual values, make R figure out the length of each vector and
+the corresponding proportion in one line of code.
+
+```{r ozone-perc}
+# calculate proportion of ozone measurements that exceed 0.070 ppm 
+```
+
+# Question 10: `ggplot2` extensions
+
+Navigate to [this website](https://exts.ggplot2.tidyverse.org/gallery/) and
+browse the `ggplot2` extensions. These themes can be very useful, so it's good
+to be aware of them. Which theme would be appropriate for your own research or
+senior project, and why? How would you use it? Briefly describe your data
+and why the extension would improve the data visualization and communication.
+
+\newpage
+
+# Appendix
+
+```{r show_code, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+```
