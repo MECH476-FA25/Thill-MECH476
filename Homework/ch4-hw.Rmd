@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 4 Homework: Visualizing Ozone Data' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -45,6 +45,9 @@ the pathnames, if needed.
 
 ```{r load-packages}
 # load packages for current R session
+
+library("tidyverse")
+
 ```
 
 ## Import, select, and clean data
@@ -58,6 +61,12 @@ the output as a `tibble` (*not in that particular order*).
 
 ```{r import-data}
 # ozone: import, select, drop missing observations, rename
+
+ozone_data <- read_csv("../Data/ftc_o3.csv") %>%
+  select(sample_measurement, datetime) %>%
+  drop_na() %>%
+  rename(ozone_ppm = sample_measurement)
+
 ```
 
 ## Examine Data
@@ -67,6 +76,9 @@ imported and was manipulated properly.
 
 ```{r missing-data}
 # examine dataframe object 
+
+head(ozone_data)
+
 ```
 
 # Question 1: `ggplot2` time series
