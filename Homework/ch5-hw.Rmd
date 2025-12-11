@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 5 Homework: Exploring Univariate Data' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -33,6 +33,9 @@ Load the necessary R packages into your R session.
 
 ```{r packages, message=FALSE}
 # load packages
+
+library("tidyverse")
+
 ```
 
 Recreate the pipe of `dplyr` functions that you used to import the data, select
@@ -44,12 +47,21 @@ output with a good name.
 
 ```{r import-data, message=FALSE}
 # ozone: import, select, drop missing observations, rename
+
+ozone_data <- readr::read_csv("../Data/ftc_o3.csv") %>%
+ select(datetime, sample_measurement) %>%  
+ drop_na() %>%
+ rename(ozone_ppm = sample_measurement)
+
 ```
 
 Check that the data imported correctly.
 
 ```{r data-check}
 # examine dataframe object 
+
+head(ozone_data)
+
 ```
 
 \newpage
