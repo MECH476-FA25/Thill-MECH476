@@ -48,7 +48,7 @@ car every year.
 ```{r load-packages}
 # do you need to install each R package?
 # load packages for current R session
-library(tidyverse)
+library("tidyverse")
 ```
 
 # Question 1: Preparation
@@ -80,12 +80,12 @@ variable name (e.g., `ozone_ppm_hourly`).
  # drop missing observations
  # rename main variable
 
-raw_data <- read_csv("../../data/ftc_o3.csv")
+raw_data <- read_csv("../Data/ftc_o3.csv")
 
-ozone_data <- read_csv("../..data/ftc_o3.csv") %>%
-  select(sample_measurment, datetime) %>%
+ozone_data <- read_csv("../Data/ftc_o3.csv") %>%
+  select(sample_measurement, datetime) %>%
   drop_na() %>%
-  rename(ozone_ppm = sample_measurment)
+  rename(ozone_ppm = sample_measurement)
 
 head(ozone_data)
 ```
@@ -101,7 +101,7 @@ were no missing values for `datetime`.
 # examine tibble
 # calculate number of missing observations 
 
-sum(is.na(raw_data$sample_measurment))
+sum(is.na(raw_data$sample_measurement))
 
 ```
 
