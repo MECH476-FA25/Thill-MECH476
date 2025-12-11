@@ -116,7 +116,7 @@ a descriptive name.
 ```{r ozone-object}
 # create base layer of ozone time series (no geom) and save to object
 
-ozoneppm_over_time <- ggplot(ozone_data, aes(x = datetime, y = ozone_ppm))
+ozone_ppm_over_time <- ggplot(ozone_data, aes(x = datetime, y = ozone_ppm))
 
 ```
 
@@ -129,9 +129,9 @@ in the `ggplot` object in Question 3.
 ```{r ozone-geom}
 # add layer to ggplot object
 
-ozoneppm_over_time <- ozoneppm_over_time +
+ozone_ppm_over_time <- ozone_ppm_over_time +
                         geom_point()
-ozoneppm_over_time
+ozone_ppm_over_time
 
 ```
 
@@ -140,6 +140,8 @@ ozoneppm_over_time
 Call and examine object within the R Markdown, Console, or using View. How
 many layers does this `ggplot` object contain? Why?
 
+*** the 'ggplot()'object we created has no layers assingend with it as there are is no Geom applied to it.***
+
 # Question 6: theme
 
 Next, add the `ggplot2` theme  of your choice to the `ggplot` object with
@@ -147,6 +149,11 @@ Next, add the `ggplot2` theme  of your choice to the `ggplot` object with
 
 ```{r ozone-theme}
 # add theme to ggplot object
+
+ozone_ppm_over_time <- ozone_ppm_over_time +
+                        theme_bw()
+ozone_ppm_over_time
+
 ```
 
 # Question 7: additions
@@ -166,6 +173,11 @@ Using this technique and the same additive approach (`ggplot_object + ... + titl
 
 ```{r ozone-time-label}
 # add title and axis labels to time series
+
+ozone_ppm_over_time <- ozone_ppm_over_time + 
+                        ozone_labels
+ozone_ppm_over_time
+
 ```
 
 # Question 7: ways to see more granularity  
@@ -181,6 +193,13 @@ points using the `alpha = ` aesthetic.  Try recreating the time-series plot with
 ```{r ozone-time-label-alpha}
 # add alpha aesthetic to the geom_point()
 
+ozone_ppm_over_time <- ggplot(ozone_data, aes(x = datetime, y = ozone_ppm)) +
+  geom_point(alpha = 0.2) +
+  theme_bw() +
+  ozone_labels
+
+ozone_ppm_over_time
+
 ```
 
 Alternatively, we could examine just the ozone measurements that
@@ -192,8 +211,16 @@ ozone concentration measurement on the y-axis. Remember to add the relevant
 
 ```{r high-ozone-plot}
 # filter data to ozone concentration measurements exceeding 0.070 ppm 
-
 # time series of high ozone measurements
+ozone_ppm_over_time <- ggplot(filter(ozone_data, ozone_ppm > 0.070), aes(x = datetime, y = ozone_ppm)) +
+  geom_point() +
+  theme_bw() +
+  labs(x = "Time of Measurement (YYYY-MM-DD HH:MM:SS)",
+       y = "Ozone Concentration (ppm)",
+       title = "Hourly Ozone Measurements in Fort Collins, CO",
+       subtitle = "Measurements over EPA threshold of 0.07ppm")
+
+ozone_ppm_over_time
 ```
 
 # Question 8: seasonality
