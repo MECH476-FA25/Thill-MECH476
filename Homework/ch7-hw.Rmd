@@ -51,6 +51,10 @@ recorded as 0. Assign this to a dataframe object with a meaningful name.
 
 ```{r import-data}
 # import and tidy salary data
+salary_data_raw <- readr::read_csv(file = "../data/ME_salaries.csv") %>%
+  clean_names() %>%
+  mutate(gender = as.factor(gender)) %>%
+  filter(salary != 0)
 
 ```
 
@@ -58,6 +62,11 @@ How many observations have a 0 (zero) value for salary? Note: The last question 
 
 ```{r salary-zero}
 # number of observations with salary as 0 
+Salary_zero = readr::read_csv(file = "../data/ME_salaries.csv") %>%
+  clean_names() %>%
+  filter(salary == 0) %>%
+  nrow()
+Salary_zero
 
 ```
 
@@ -68,7 +77,7 @@ is binary term).
 
 ```{r gender-levels}
 # number of factor levels
-
+levels(salary_data_raw$gender)
 ```
 
 ## Question 2: Univariate EDA
@@ -79,7 +88,61 @@ is continuous or categorical, and explain how and why you adjusted your EDA
 approach accordingly.
 
 ```{r univariate-eda, include=FALSE}
-# univariate eda
+# univariate eda and histogram of age
+age_history <- ggplot2::ggplot(salary_data_raw, aes(x = age)) +
+  geom_histogram(
+    bins = 30, 
+    fill = "steelblue", 
+    color = "white", 
+    alpha = 0.7
+  ) +
+  labs(
+    title = "Distribution of Employee Age",
+    x = "Age", 
+    y = "Count"
+  ) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+age_history
+salary_histo <- ggplot2::ggplot(salary_data_raw, aes(x = salary)) +
+  geom_histogram(
+    bins = 30, 
+    fill = "steelblue", 
+    color = "white", 
+    alpha = 0.7
+  ) +
+  labs(
+    title = "Salary Distribution",
+    x = "Salary",
+    y = "Count"
+  ) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+salary_histo
+gender_box <- ggplot(salary_data_raw, aes(x = gender, y = salary, fill = gender)) +
+  geom_boxplot() +
+  labs(
+    title = "Salary by Gender",
+    x = "Gender",
+    y = "Salary"
+  ) +
+  scale_fill_manual(values = c("male" = "#0072B2", "female" = "#D55E00")) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "none"
+  )
+gender_box
 
 ```
 
@@ -92,7 +155,15 @@ Create a histogram of `salary`, faceted by `gender`. Add `bins = 50` and
 
 ```{r hist-salary}
 # histogram of salaries split by gender
-
+ggplot(salary_data_raw, aes(x = salary)) +
+  geom_histogram(bins = 50, color = "lightgrey", fill = "steelblue") +
+  facet_wrap(~ gender) +
+  labs(
+    title = "Distribution of Salary by Gender",
+    x = "Salary",
+    y = "Count"
+  ) +
+  theme_minimal()
 ```
 
 Create a histogram of `age`, faceted by `gender`. Add `bins = 50` and 
@@ -100,7 +171,15 @@ Create a histogram of `age`, faceted by `gender`. Add `bins = 50` and
 
 ```{r hist-age}
 # histogram of ages split by gender
-
+ggplot(salary_data_raw, aes(x = age)) +
+  geom_histogram(bins = 50, color = "lightgrey", fill = "steelblue") +
+  facet_wrap(~ gender) +
+  labs(
+    title = "Distribution of Age by Gender",
+    x = "Age",
+    y = "Count"
+  ) +
+  theme_minimal()
 ```
 
 \newpage
