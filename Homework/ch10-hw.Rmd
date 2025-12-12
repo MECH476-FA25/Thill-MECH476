@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 10 Homework: Measurement' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -42,7 +42,15 @@ Import the `airlift_mass_repeatability.csv` file into a data frame called `blank
 - create a new column vector named `mass_mg` by rescaling the `mass_g` data (i.e., convert $g$ to $mg$ by multiplying `mass_g` by 1000)
 
 ```{r import-clean-data}
+blanks <- read.csv("../data/AIRLIFT_mass_repeatability.csv") %>%
+  dplyr::select(1:3) %>%
+  rename(date = 1, id = 2, mass_g = 3) %>%
+  mutate(date = dmy(date),
+         id = as.factor(id),
+         mass_mg = mass_g * 1000,
+         across(where(is.numeric), ~ round(., 4)))
 
+head(blanks)
 
 ```
 
@@ -53,6 +61,18 @@ Import the `airlift_mass_repeatability.csv` file into a data frame called `blank
   2c. How many samples are present for each filter ID? Hint: look up the `dplyr::count()` function.  
   2d. Over how long of a period were these blank measurements made? Hint: this can be done in base R with a `max() - min()` or with `lubridate::interval() %>% as.duration()`.
 ```{r unique-IDs}
+#check for NAs?
+paste0("NAs present: ", sum(is.na(blanks)))
+
+#Unique IDs
+paste0("Unique IDs: ", n_distinct(blanks$id))
+
+#Samples filter IDs
+blanks %>%
+  count(id)
+
+#Time
+max(blanks$date) - min(blanks$date)
 
 
 ```
@@ -63,6 +83,13 @@ Group the `blanks` data frame by `id` and calculate mean, median, and standard d
 
 ```{r blank-descriprives}
 
+blanks %>%
+  group_by(id) %>%
+  summarise(
+    mean_mass_mg = mean(mass_mg),
+    median_mass_mg = median(mass_mg),
+    sd_mass_mg = sd(mass_mg)) %>%
+  mutate(across(where(is.numeric), ~ round(., 4)))
 
 ```
 
@@ -70,4 +97,16 @@ Group the `blanks` data frame by `id` and calculate mean, median, and standard d
 
 Calculate the limit of detection (LOD) for this measurement method. Note: you will need to calculate standard deviations for each filter `id` (as done in question 3) and then estimate LOD from $LOD = 3\cdot \sigma_b$ where $\sigma_b$ is calculated for each filter `id`.
 
+```{r Limit-of-detection}
 
+blanks %>%
+  group_by(id) %>%
+  summarise(
+    sd_mass_mg = sd(mass_mg)
+  ) %>%
+  mutate(
+    LOD_mg = 3 * sd_mass_mg
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(., 4)))
+
+```
