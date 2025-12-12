@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 8 Homework: Functional Programming' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -18,6 +18,7 @@ knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
 # load packages for current session
 library(tidyverse) 
 library(lubridate)
+library(purrr)
 library(gridExtra) # needed for extra credit question
 ```
 
@@ -40,6 +41,11 @@ Write a **function** named `sort_abs()`that takes a vector of numbers as input, 
 ```{r sort-baseR, include=FALSE}
 
 #create a function named `sort_abs()`
+sort_abs <- function(nums) {
+nums %>%
+abs() %>%
+sort()
+}
 
 ```
 
@@ -48,14 +54,40 @@ Write a **function** named `sort_abs()`that takes a vector of numbers as input, 
 Modify the function `import.w.name()` to import the “date” part of the filename (in addition to the sensor ID). Create a new column variable called “date_created” with this information. Hint: you will need to apply a regex pattern like this: `"(?<=_)[:alnum:]+(?=\\.)"`
 
 ```{r import.w.name2, include=FALSE}
-# create an object that tracks the file names and file paths
-# see the coursebook for details
+# Track file names and full file paths
 
+file_list <- list.files("../../data/purpleair/", full.names = TRUE)
 
-# modify the import.w.name function
-# hint: start with what is provided in the coursebook
+# Import a PurpleAir .csv and add metadata parsed from the file name
+import.w.name <- function(pathname) {
 
+  read_csv(pathname, col_names = TRUE) %>%
+    mutate(
+      # Extract sensor ID from file name (between "/" and "_")
+      sensor_ID = str_extract(pathname, "(?<=/)[[:alnum:]]+(?=_)"),
 
+      # Convert UTCDateTime to POSIXct
+      datetime = lubridate::ymd_hms(UTCDateTime),
+
+      # Extract date from filename (after "_" and before ".")
+      date_created = format(
+        lubridate::ymd(
+          str_extract(pathname, "(?<=_)[[:alnum:]]+(?=\\.)")
+        ),
+        "%Y-%m-%d"
+      )
+    ) %>%
+    dplyr::select(
+      datetime,
+      current_temp_f,
+      current_humidity,
+      pressure,
+      pm2_5_atm,
+      sensor_ID,
+      date_created
+    ) %>%
+    tidyr::drop_na()
+}
 
 ```
 
@@ -64,6 +96,14 @@ This question is designed to give you practice at data cleaning. First, create a
 
 ```{r map-dplyr-pipe, warning=FALSE, message=FALSE, include=FALSE}
 # the map code is provided in the coursebook
+PA_data_merged <- map_dfr(file_list, import.w.name) %>%
+  dplyr::rename(
+    temp_f = current_temp_f,
+    rh     = current_humidity
+  )
+
+
+glimpse(PA_data_merged)
 
 
 ```
@@ -71,13 +111,76 @@ This question is designed to give you practice at data cleaning. First, create a
 ## Question 4
 Can you find the 3 indices of UTCDateTime in PA_data_merged that failed to parse with lubridate::? Hint: use the `is.na()` function nested wihtin `which()` to return the row numbers in question. Both of these are baseR functions. Once you have the row entries identified you can `View()` them with a call to `slice()`.: normal entries in UTCDateTime are all the same number of characters nchar() or entries that failed to parse in the new date column will have NA associated with them.
 ```{r find-NAs, include=FALSE}
+bad_rows <- which(is.na(PA_data_merged$datetime))
 
+bad_rows
+
+# View the problematic entries (and a few useful columns)
+PA_data_merged %>%
+  dplyr::slice(bad_rows) %>%
+  dplyr::select(sensor_ID, UTCDateTime, datetime, date_created)
 
 ```
 
 ## Question 5
 Create a series of EDA plots (cdf, boxplot, histogram, time series) of the `pm2_5_atm` variable from `PA_data_merged`. Use `color =` or `fill =` as an aesthetic to differentiate each sensor by `sensor_ID`. Do the data have a central tendency? Do they appear normally distributed? Do events show up in the time series?  Note: the variable `pm2_5_atm` is the concentration of fine particulate matter air pollution in micrograms per cubic meter ($\mu g/m^3$).
 
+```{r PA-EDA-plots, message=FALSE, warning=FALSE, include=FALSE}
+# CDF plot
+p_cdf <- ggplot(PA_data_merged, aes(x = pm2_5_atm, color = sensor_ID)) +
+  stat_ecdf(size = 1) +
+  labs(
+    title = "CDF of PM2.5 (atm) by Sensor",
+    subtitle = "Curves farther right indicate higher PM2.5 values across percentiles",
+    x = expression("PM2.5 ("*mu*"g/m"^3*")"),
+    y = "Cumulative probability",
+    color = "Sensor ID"
+  ) +
+  theme_minimal()
+
+# Boxplot
+p_box <- ggplot(PA_data_merged, aes(x = sensor_ID, y = pm2_5_atm, fill = sensor_ID)) +
+  geom_boxplot(alpha = 0.7, outlier.alpha = 0.3) +
+  labs(
+    title = "PM2.5 (atm) Distribution by Sensor",
+    subtitle = "Compare medians and spread across sensors",
+    x = "Sensor ID",
+    y = expression("PM2.5 ("*mu*"g/m"^3*")"),
+    fill = "Sensor ID"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Time-series plot
+p_ts <- ggplot(PA_data_merged, aes(x = datetime, y = pm2_5_atm, color = sensor_ID)) +
+  geom_line(alpha = 0.7) +
+  labs(
+    title = "PM2.5 (atm) Time Series by Sensor",
+    subtitle = "Spikes may indicate pollution events or short-term anomalies",
+    x = "Datetime (UTC)",
+    y = expression("PM2.5 ("*mu*"g/m"^3*")"),
+    color = "Sensor ID"
+  ) +
+  theme_minimal()
+
+# Histogram
+p_hist <- ggplot(PA_data_merged, aes(x = pm2_5_atm, fill = sensor_ID)) +
+  geom_histogram(bins = 40, alpha = 0.5, position = "identity") +
+  labs(
+    title = "Histogram of PM2.5 (atm) by Sensor",
+    subtitle = "Look for skew/heavy tails vs. normality",
+    x = expression("PM2.5 ("*mu*"g/m"^3*")"),
+    y = "Count",
+    fill = "Sensor ID"
+  ) +
+  theme_minimal()
+
+# Print plots (if not doing extra credit)
+p_cdf
+p_box
+p_ts
+p_hist
+```
 ### Extra Credit
 Create the EDA figures within a single plot (hint: use the `gridExtra::` package).  Show only one legend and place it within the body of the CDF plot (hint: to move or remove a legend, add a call that uses a version of `theme(legend.position = ...)`).
 

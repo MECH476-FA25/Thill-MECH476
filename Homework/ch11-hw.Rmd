@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 11 Homework: Modeling' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -18,6 +18,7 @@ knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
 # load packages for current session
 library(tidyverse) 
 library(gridExtra) 
+library(car)
 ```
 
 # Chapter 11 Homework
@@ -41,16 +42,41 @@ Evaluate assumption 3 about whether there is collinearity among these variables.
 
 
 ```{r ch11-homework-q1, echo=FALSE, include=FALSE}
+# Load the bodysize data
+bodysize <- read_csv("../data/bodysize.csv")
 
+# Model 1: height ~ waist
+model_1 <- lm(height ~ waist, data = bodysize)
+
+# Model 2: height ~ mass
+model_2 <- lm(height ~ mass, data = bodysize)
+
+# Model 3: height ~ waist + mass
+model_3 <- lm(height ~ waist + mass, data = bodysize)
+
+# Show coefficients cleanly
+coef_1 <- coef(model_1)
+coef_2 <- coef(model_2)
+coef_3 <- coef(model_3)
+
+coef_1
+coef_2
+coef_3
 ```
+
+*** Model_1 intercept 155.4967199 coefficient 0.1099283, Model_2 intercept 150.6109083 coefficient 0.1909431, Model_3 intercept 177.4604248 coefficient -.6347416, .6394358***
 
 ## Question 2
 Create a new variable in the `bodysize` data frame using `dplyr::mutate`. Call this variable `volume` and make it equal to $waist^2*height$.  Use this new variable to predict `mass`.  
 
 ```{r ch11-homework-q2}
 
+bodysize <- bodysize %>%
+  mutate(volume = waist^2 * height)
 
+mod_vol <- lm(mass ~ volume, data = bodysize)
 
+summary(mod_vol)
 
 ```
 
@@ -58,13 +84,25 @@ Does this variable explain more of the variance in `mass` from the NHANES data? 
 
 ```{r ch11-homework-q2a}
 
+summary(lm(mass ~ waist, data = bodysize))
+summary(lm(mass ~ height, data = bodysize))
+summary(mod_vol)  
 
 ```
+*** This variable does explain the variance better then the previous models. This can be seen by the R squared value being higher in this version when compared to the other models generated and the respective R squared values they have *** 
 
-Create a scatterplot of `mass` vs. `volume` to examine the fit.  Draw a fit line using `geom_smooth()`.
+Create a scatter plot of `mass` vs. `volume` to examine the fit.  Draw a fit line using `geom_smooth()`.
 
 ```{r ch11-homework-q2b}
-
+ggplot(bodysize, aes(x = volume, y = mass)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", color = "red", linewidth = 1) +
+  theme_bw() +
+  labs(
+    title = "Mass vs. Volume",
+    x = "Volume (waist² × height)",
+    y = "Mass"
+  )
 
 ```
 
@@ -72,7 +110,11 @@ Create a scatterplot of `mass` vs. `volume` to examine the fit.  Draw a fit line
 Load the `cal_aod.csv` data file and fit a linear model with `aeronet` as the independent variable and `AMOD` as the independent variable. 
 ```{r ch11-homework-q3}
 # load data
+cal <- read_csv("../data/cal_aod.csv")
 
+model_cal <- lm(amod ~ aeronet, data = cal)
+
+summary(model_cal)
 
 ```
 
@@ -80,24 +122,38 @@ Evaluate model assumptions 4-7 from the coursebook.  Are all these assumptions v
 
 ```{r ch11-homework-q3a}
 #assumption 4: mean of residuals is zero
+residual <- residuals(model_cal)
+fit <- fitted(model_cal)
 
+mean_residual <- mean(residual)
+mean_residual
 
 ```
-
+*** our assumptions are valid because the residual is basically zero for this model.***
 ```{r ch11-homework-q3b}
 #assumption 5: residuals are normally distributed
-
+qqnorm(residual)
+qqline(residual, col = "red")
 
 ```
+*** The fitted line fits the distribution plot very closely with the exception when you are looking at either end of the data where the data drops bellow on the left and and is above on the right end. ***
 
 ```{r ch11-homework-q3c}
 #assumption 6: the error term is homoscedastic
-
+plot(fit, residual,
+     xlab = "Fitted values",
+     ylab = "Residuals",
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red")
 
 ```
-
+*** This assumption is valid for most locations as the data shows the residuals are all close to zero.
 ```{r ch11-homework-q3d}
 #assumption 7: no autocorrelation among residuals
+acf(residual, main = "ACF of Residuals")
+pacf(residual,main = "Partial ACF od Residuals")
 
+car::durbinWatsonTest(model_cal)
 
 ```
+*** The Durbin-Watson test is very close to zero and all values fall within the bounds except for the first one for the ACF. ***
