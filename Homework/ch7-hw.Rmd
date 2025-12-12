@@ -191,13 +191,24 @@ better visualize the outliers.
 
 ```{r salary-box}
 # boxplots of salary data by gender
-
+ggplot(salary_data_raw, aes(x = "", y = salary)) +
+  geom_boxplot(outlier.shape = 1) +
+  facet_wrap(~ gender, scales = "free_y") +
+  labs(title = "Salary Distribution by Gender",
+      y = "Salary") +
+  theme_minimal()
 ```
 
 Create a boxplot of `age`, faceted by `gender`.
 
 ```{r age-box}
 # boxplots of age data by gender
+ggplot(salary_data_raw, aes(x = "", y = age)) +
+  geom_boxplot(outlier.shape = 1) +
+  facet_wrap(~ gender, scales = "free_y") +
+  labs(title = "Age Distribution by Gender",
+      y = "Age") +
+  theme_minimal()
 
 ```
 
@@ -210,7 +221,16 @@ Create a scatterplot of `age` (x-axis) and `salary`, differentiating by
 
 ```{r multivar-scatter}
 # scatterplot of salary across age by gender
-
+ggplot(salary_data_raw, aes(x = age, y = salary, color = gender, shape = gender)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Salary vs. Age by Gender",
+    x = "Age",
+    y = "Salary",
+    color = "Gender",
+    shape = "Gender"
+  ) +
+  theme_minimal()
 ```
 
 *Bonus point*: Is there a correlation between an engineer's salary and age?
@@ -218,7 +238,10 @@ What is the estimated Pearson correlation coefficient *r*? Run a formal test.
 
 ```{r corr-test}
 # correlation test
-
+correlation_r <- cor(salary_data_raw$age, salary_data_raw$salary, method = "pearson")
+correlation_test <- cor.test(salary_data_raw$age, salary_data_raw$salary, method = "pearson")
+correlation_r
+correlation_test
 ```
 
 \newpage
@@ -232,7 +255,16 @@ differences the farther up you go on a log scale axis.
 
 ```{r salary-ecdf}
 # plot cdf of salary by gender
-
+ggplot(salary_data_raw, aes(x = salary, color = gender)) +
+  stat_ecdf(size = 1) +
+  scale_x_log10(limits = c(5e4, 5e5)) +
+  labs(
+    title = "Cumulative Distribution Function (CDF) of Salary by Gender",
+    x = "Salary (log scale)",
+    y = "Cumulative Probability",
+    color = "Gender"
+  ) +
+  theme_minimal()
 ```
 
 ## Question 7: Quantiles
@@ -247,23 +279,36 @@ scientific notation in the text output; check the knitted document.
 
 ```{r salary-quantiles, message=FALSE}
 # calculate quantiles of salary by gender
+salary_quantiles <- salary_data_raw %>%
+  group_by(gender) %>%
+  summarize(
+    q0 = quantile(salary, 0),
+    q25 = quantile(salary, 0.25),
+    q50 = quantile(salary, 0.5),
+    q75 = quantile(salary, 0.75),
+    q100 = quantile(salary, 1)
+  ) %>%
+  ungroup()
 
+salary_quantiles
 ```
 
 What is the difference in salary between men and women at the median? 
 
-  * Median salary for women is 
-  * Median salary for men is 
-  * The difference at the median is 
+  * Median salary for women is 90000
+  * Median salary for men is 97000
+  * The difference at the median is 7000 
   
 At the top percentile (maximum)? 
 
-  * Maximum salary for women is 
-  * Maximum salary for men is 
-  * The difference at the maximum is 
+  * Maximum salary for women is 350000
+  * Maximum salary for men is 1027653
+  * The difference at the maximum is 677653
 
 Do you think there is a salary difference by gender across the pay scale? What
 other information would you need to test your hypothesis?
+
+Examining the 25th percentile, median, and 75th percentile indicates a consistent salary gap favoring males. To further validate this hypothesis, the cumulative distribution function (CDF) should be analyzed. The CDF shows that at every percentile, males earn more than females, confirming that the wage gap persists across the entire income distribution.
 
 ## Question 8: Hypothetical analysis
 
@@ -280,11 +325,30 @@ information on the dataset and the variables. How would you describe the
 correlation between the independent variable and dependent variable? Do you
 see any patterns when considering the third variable?
 
+Beyond gender and age, education level plays a significant role in salary outcomes. In the engineering industry, individuals with a master’s degree or PhD generally earn higher salaries than those with only a bachelor’s degree. Years of experience is also a key determinant of income, as compensation typically increases with greater tenure and accumulated industry experience.
+
 (View R Markdown PDF for image)
 
 ```{r mpg-plot}
 # call mpg pdf - you need to recreate it 
 knitr::include_graphics("./mpg-ch7-plot.pdf")
+ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point(size = 3, alpha = 0.8) +
+  labs(
+    title = "Mileage by Engine Displacement",
+    subtitle = "Data from 1999 and 2008",
+    x = "Engine displacement (litres)",
+    y = "Highway miles per gallon",
+    color = "Car class",
+    caption = "Source: EPA (http://fueleconomy.gov)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    plot.caption = element_text(hjust = 0, size = 8),
+    legend.position = "right"
+  )
 ```
 
 \newpage
