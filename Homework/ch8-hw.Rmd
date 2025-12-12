@@ -18,7 +18,6 @@ knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
 # load packages for current session
 library(tidyverse) 
 library(lubridate)
-library(purrr)
 library(gridExtra) # needed for extra credit question
 ```
 
@@ -39,11 +38,10 @@ like to use the subtitle as a place for the main summary for the viewer.
 Write a **function** named `sort_abs()`that takes a vector of numbers as input, calculates the absolute values of each entry, and then outputs that vector sorted from smallest to largest value. 
 
 ```{r sort-baseR, include=FALSE}
-
-sort_abs <- function(input_vector) {
-  output_vector <- abs(input_vector) %>%
-    sort()
-  return(output_vector)
+#create a function named `sort_abs()`
+sort_abs <- function(x) {
+  sorted <- sort(abs(x))
+  return(sorted)
 }
 
 ```
@@ -53,33 +51,25 @@ sort_abs <- function(input_vector) {
 Modify the function `import.w.name()` to import the “date” part of the filename (in addition to the sensor ID). Create a new column variable called “date_created” with this information. Hint: you will need to apply a regex pattern like this: `"(?<=_)[:alnum:]+(?=\\.)"`
 
 ```{r import.w.name2, include=FALSE}
-
 # create an object that tracks the file names and file paths
 # see the coursebook for details
-file_list <- list.files('../data/purpleair/', full.names = TRUE)
-
-# modify the import.w.name function
-# hint: start with what is provided in the coursebook
-
-import.w.name <- function(pathname) {
-  df <- readr::read_csv(pathname, col_names = TRUE)
+import.w.name <- function(file_path) {
+  
+  df <- read_csv(file_path)
+  
+  file_name <- basename(file_path)
+  
+  sensor_id <- str_extract(file_name, "^[^_]+")
+  
+  date_created <- str_extract(file_name, "(?<=_)[:alnum:]+(?=\\.)")
+  
   df <- df %>%
-    dplyr::mutate(
-      sensor_ID = stringr::str_extract(pathname, "(?<=/)[[:alnum:]]+(?=_)"),
-      date_created = stringr::str_extract(pathname, "(?<=_)[[:alnum:]]+(?=\\.)"),
-    ) %>%
-    dplyr::select(
-      UTCDateTime,
-      current_temp_f,
-      current_humidity,
-      pressure,
-      pm2_5_atm,
-      sensor_ID,
-      date_created
-    ) %>%
-    stats::na.omit()
+    mutate(sensor_id = sensor_id,
+           date_created = date_created)
+  
   return(df)
 }
+
 
 ```
 
@@ -87,11 +77,20 @@ import.w.name <- function(pathname) {
 This question is designed to give you practice at data cleaning. First, create a pipeline that (1) uses `purrr::map_dfr()` and `import.w.name()` to read in  all the the PurpleAir data files into a single data frame. Call that new data frame `PA_data_merged`. (2) Then, have the pipeline convert the character vector UTCDateTime into new column of class POSIXct using a `lubridate::` function (note - not all the indices in UTCDateTime will parse correctly; we will address this in Question 4). Finally, (3) finish the pipeline by renaming the `current_temp_f` and `current_humidity` column names to shorter names.
 
 ```{r map-dplyr-pipe, warning=FALSE, message=FALSE, include=FALSE}
-# the map code is provided in the coursebook
+# list ONLY csv files (avoids __MACOSX and other non-data items)
+file_list <- list.files(
+  path = "../purpleair",
+  pattern = "\\.csv$",
+  full.names = TRUE
+)
+
+# extra safety: drop directories / bad paths
+file_list <- file_list[file.exists(file_list) & !dir.exists(file_list)]
+
 PA_data_merged <-
-  map_dfr(file_list, import.w.name) %>%                 
-  mutate(datetime = ymd_hms(UTCDateTime, quiet = TRUE)) %>% 
-  rename(                                                   
+  map_dfr(file_list, import.w.name) %>%
+  mutate(datetime_utc = ymd_hms(UTCDateTime, quiet = TRUE)) %>%
+  rename(
     temp_f   = current_temp_f,
     humidity = current_humidity
   )
@@ -115,9 +114,12 @@ Create a series of EDA plots (cdf, boxplot, histogram, time series) of the `pm2_
 Create the EDA figures within a single plot (hint: use the `gridExtra::` package).  Show only one legend and place it within the body of the CDF plot (hint: to move or remove a legend, add a call that uses a version of `theme(legend.position = ...)`).
 
 ```{r PA-EDA-plots, message=FALSE, warning=FALSE, include=FALSE}
-#cdf plot
+
+PA_data_merged <- PA_data_merged %>%
+  rename(sensor_ID = any_of(c("sensor_ID", "sensor_id")))
+
 p_cdf <- ggplot(PA_data_merged, aes(x = pm2_5_atm, color = sensor_ID)) +
-  stat_ecdf(size = 1) +
+  stat_ecdf(linewidth = 1) +
   labs(title = "CDF", x = "PM2.5 (\u03BCg/m^3)", y = "Cumulative probability") +
   theme_minimal() +
   theme(
@@ -126,7 +128,6 @@ p_cdf <- ggplot(PA_data_merged, aes(x = pm2_5_atm, color = sensor_ID)) +
     legend.title = element_blank()
   )
 
-#boxplot
 p_box <- ggplot(PA_data_merged, aes(x = sensor_ID, y = pm2_5_atm, fill = sensor_ID)) +
   geom_boxplot(outlier.shape = 1) +
   coord_flip() +
@@ -134,14 +135,12 @@ p_box <- ggplot(PA_data_merged, aes(x = sensor_ID, y = pm2_5_atm, fill = sensor_
   theme_minimal() +
   theme(legend.position = "none")
 
-#time-series plot
-p_ts <- ggplot(PA_data_merged, aes(x = datetime, y = pm2_5_atm, color = sensor_ID)) +
+p_ts <- ggplot(PA_data_merged, aes(x = datetime_utc, y = pm2_5_atm, color = sensor_ID)) +
   geom_line(alpha = 0.85) +
   labs(title = "Time series", x = "Datetime", y = "PM2.5 (\u03BCg/m^3)") +
   theme_minimal() +
   theme(legend.position = "none")
 
-#histogram
 p_hist <- ggplot(PA_data_merged, aes(x = pm2_5_atm, fill = sensor_ID)) +
   geom_histogram(bins = 40, alpha = 0.7, position = "identity") +
   labs(title = "Histogram", x = "PM2.5 (\u03BCg/m^3)", y = "Count") +
@@ -154,4 +153,5 @@ gridExtra::grid.arrange(
   ncol = 2,
   top = "EDA for PM2.5 (\u03BCg/m^3) by PurpleAir Sensor"
 )
+
 ```
