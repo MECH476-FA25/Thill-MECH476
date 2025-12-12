@@ -68,6 +68,15 @@ element. How many hashtags were used by Colorado senators?
 
 ```{r hashtags}
 # wildfire hashtag list
+
+hashtags <- co_tweets %>%
+  select(text) %>%
+  pull(text) %>%
+  str_extract_all(pattern="#(\\d|\\w)+") %>%
+  unlist()
+
+paste0("Total CO senator hashtags: ", length(hashtags))
+
 ```
 
 ## Question 2: Fires
@@ -79,6 +88,18 @@ the hashtags that include "fire" or "wildfire". How many hashtags included
 "fire"? How many included "wildfire"?
 
 ```{r hashtag-fire}
+hashtag_fire <- co_tweets %>%
+  select(text) %>%
+  pull(text) %>%
+  str_extract_all(pattern="fire|wildfire") %>%
+  unlist()
+
+paste0("'Fire' Hashtags: ", length(hashtag_fire))
+
+hashtag_wildfire <- str_subset(hashtag_fire, "wild")
+
+paste0("'Wildfire' Hashtags: ", length(hashtag_wildfire))
+
 ```
 
 ## Question 3: Wildfires 
@@ -91,6 +112,13 @@ corresponding timestamp and user. Specifically, (a) select `text`, `date`, and
 
 ```{r wildfire}
 # filter to tweets concerning wildfires
+
+wildfire_tweets <- co_tweets %>%
+  select(date_parsed, year_num, month_name, hour_of_day, text, user) %>%
+  filter(str_detect(text, "wildfire"))
+
+head(wildfire_tweets)
+
 ```
 
 ## Question 4: Senators
@@ -99,6 +127,14 @@ Which Colorado senator tweets more about wildfires?
 
 ```{r wildfire-senator}
 # number of wildfire tweets by senator
+
+Most_tweets <- wildfire_tweets %>%
+  count(user, sort=TRUE) %>%
+  slice_head(n=1) %>%
+  pull(user)
+
+paste0("CO Senator with most wildfire themed tweets: ", Most_tweets)
+
 ```
 
 ## Question 5: Timing
@@ -110,7 +146,44 @@ about what happened in the previous year.)
 
 ```{r wildfire-timing}
 # number of wildfire tweets by year 
+
+yearly_wildfires <- wildfire_tweets %>%
+  select(year_num) %>%
+  filter(year_num >= 2011 & year_num <= 2017) %>%
+  count(year_num, sort = TRUE) %>%
+  rename(year = year_num)
+
+yearly_wildfires_table <- yearly_wildfires %>%
+  mutate(year = as.integer(year)) %>%
+  rename(
+    Year = year,
+    `Tweet Count` = n
+  ) %>%
+  knitr::kable(
+    caption = "CO Senator Wildfire-Related Tweets by Year (2011–2017)"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  row_spec(
+    row = which.max(yearly_wildfires$n),
+    bold = TRUE,
+    color = "white",
+    background = "#d9534f"
+  )
+
+yearly_wildfires_table
+
+top_fire_year <- yearly_wildfires %>%
+  slice_head(n=1) %>%
+  pull(year)
+
+paste0("Year with most tweets about wildfires: ", top_fire_year)
+
 ```
+*** 2013 was the year with the most tweets related to wildfires, this is likely due to the droughhts that had been prevolent in colorado at the time. this woul;d cause lots of vegitation to die and dry out wich is easy kindeling for a fire to start that can spread rapidly as the whole state is very dry. ***
 
 \newpage
 
