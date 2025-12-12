@@ -1,7 +1,7 @@
 ---
 title: 'MECH476: Engineering Data Analysis in R'
 subtitle: 'Chapter 7 Homework: Multivariate Exploratory Data Analysis' 
-author: 'Student Name'
+author: 'Michael Thill'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -16,6 +16,14 @@ knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
 
 ```{r load-packages, message=FALSE}
 # load packages for current session
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+library(lubridate)
+library(janitor)
 
 ```
 
