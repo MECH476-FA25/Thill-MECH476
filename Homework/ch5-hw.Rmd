@@ -85,13 +85,43 @@ Calculate the quartiles of `ozone_ppm`. What is the minimum? Maximum? Median?
 
 ```{r ozone-quartiles}
 # calculate quantiles of ozone concentration
+ozone_q <- quantile(ozone_data$ozone_ppm, probs = c(0, .25, .5, .75, 1), na.rm = TRUE)
+tibble(
+  stat = c("Min", "Q1", "Median", "Q3", "Max"),
+  value = as.numeric(ozone_q)
+)
+
 ```
 
 ### Extra Credit
 
 Create [a similar table](https://smogdr.github.io/edar_coursebook/eda1.html#descriptive-statistics) for `ozone_ppm`. Hint: You will need to investigate table
 options in the `knitr` package.
+```{r extra credit}
+# Compute quartiles
+ozone_q <- quantile(ozone_data$ozone_ppm, probs = c(0, .25, .5, .75, 1), na.rm = TRUE)
+ozone_iqr <- IQR(ozone_data$ozone_ppm, na.rm = TRUE)
 
+# Create labeled table matching the example
+quartile_table <- tibble(
+  Quantile = c("0", "1", "0.5", "0.25", "0.75", "0.75 - 0.25"),
+  Descriptor = c("minimum", "maximum", "median", "25th%", "75th%", "IQR"),
+  `Values` = c(
+    round(ozone_q[1], 3),
+    round(ozone_q[5], 3),
+    round(ozone_q[3], 3),
+    round(ozone_q[2], 3),
+    round(ozone_q[4], 3),
+    round(ozone_iqr, 3)
+  )
+)
+
+knitr::kable(
+  quartile_table,
+  caption = "Quantile Descriptors and Values for Ozone Concentration (ppm)"
+)
+
+```
 \newpage
 
 ## Question 3: Cumulative Distribution Plot
@@ -103,6 +133,23 @@ Add axis labels, title, subtitle, and theme.
 
 ```{r ozone-cd}
 # plot cumulative distribution of ozone concentration
+ggplot(ozone_data, aes(x = ozone_ppm)) +
+  stat_ecdf(geom = "step") +
+  scale_x_continuous(
+    name = "Ozone concentration (ppm)",
+    breaks = scales::pretty_breaks(8),
+    minor_breaks = NULL
+  ) +
+  scale_y_continuous(
+    name = "Cumulative proportion",
+    breaks = seq(0, 1, by = 0.1),
+    minor_breaks = NULL,
+    limits = c(0, 1)
+  ) +
+  ggtitle("Cumulative Distribution of Ozone Concentration",
+          subtitle = "All measurements: Jan 2019 – Jan 2020") +
+  theme_minimal(base_size = 12)
+
 ```
 
 \newpage
@@ -117,21 +164,37 @@ instead of "Cumulative Distribution Plot".
 
 ```{r ozone-hist}
 # create histogram of ozone concentration
+ggplot(ozone_data, aes(x = ozone_ppm)) +
+  geom_histogram(bins = 50, boundary = 0, closed = "left") +
+  labs(
+    x = "Ozone concentration (ppm)",
+    y = "Count",
+    title = "Histogram of Ozone Concentration",
+    subtitle = "All measurements: Jan 2019 – Jan 2020"
+  ) +
+  theme_minimal(base_size = 12)
+
+
 ```
 
 ### Question 5: Concept
 
 What mathematical concept is a histogram (Q4) attempting to visualize? 
 
+*** The Histogram is attempting to visualize the distrobution of  a quantitative variable of Ozone concentrations for this specific example *** 
 ### Question 6: Distribution
 
 Based on the histogram (Q4), does ozone concentration appear to be normally
 distributed? 
 
+*** based on the histogram above there is not a normalized distribution instead there is a right skewed uni modal distribution indicating ozone concentrations are typically low or moderate with occasionally high values. ***
+
 ### Question 7: Outliers
 
-Based on the histogram (Q4), do you see any possible outliers? Skewness? How
+Based on the histogram (Q4), do you see any possible outlines? Skewness? How
 might this affect the spread and central tendency?
+
+*** based on the histogram we can see a spike in values outside of the standard .025 - .045 that is closer to .06 and a few more following closely after this. this cluster of larger values does p[l[ay a rolling skewing the center of the distribution to the right ***
 
 \newpage
 
@@ -144,6 +207,16 @@ labels to remove the x-axis scale and label.
 
 ```{r ozone-boxplot}
 # create ozone boxplot
+ggplot(ozone_data, aes(x = "", y = ozone_ppm)) +
+  geom_boxplot(outlier.alpha = 0.6) +
+  labs(
+    x = "",
+    y = "Ozone concentration (ppm)",
+    title = "Ozone Concentration Boxplot",
+    subtitle = "All measurements: Jan 2019 – Jan 2020"
+  ) +
+  theme_minimal(base_size = 12)
+
 ```
 
 \newpage
@@ -160,9 +233,9 @@ could have been done (e.g., `dplyr::filter()` with `%in%` operator).
 # create subset of data with only one day to examine daily pattern
 # I did not ask you to code this because we have not discussed dates or stringr
 # You need to uncomment the below three lines and run it; check object names
-# ozone_day <- ozone_data %>% 
-#   dplyr::filter(stringr::str_detect(string = datetime,
-#                                     pattern = "2019-07-04"))
+ ozone_day <- ozone_data %>% 
+   dplyr::filter(stringr::str_detect(string = datetime,
+                                     pattern = "2019-07-04"))
 ```
 
 ## Question 9: Autocorrelation Plot
@@ -175,8 +248,12 @@ interest outlined in the coursebook.
 
 ```{r ozone-acf}
 # create autocorrelation plot with ozone_day df
-```
+stats::acf(ozone_day$ozone_ppm, na.action = na.omit,
+           main = "ACF: Ozone (2019-07-04)",
+           xlab = "Lag (index units)", ylab = "Autocorrelation")
 
+```
+*** the authorization graph shows a gradual drop across the lags, this signifies ozone concentration is persistent across levels in short time intervals. this has a positive corrilation with other local measurements ***
 \newpage
 
 ## Question 10: Parial Autocorrelation Plot
@@ -189,8 +266,12 @@ plot in the previous question?
 
 ```{r ozone-part-acf}
 # create partial autocorrelation plot
-```
+stats::pacf(ozone_day$ozone_ppm, na.action = na.omit,
+            main = "PACF: Ozone (2019-07-04)",
+            xlab = "Lag (index units)", ylab = "Partial Autocorrelation")
 
+```
+*** this graph indicates significant correlations at the initial lags that quickly drops off. this indicates that ozone concentrations are dependent on most recent measurements ***
 \newpage
 
 # Appendix
