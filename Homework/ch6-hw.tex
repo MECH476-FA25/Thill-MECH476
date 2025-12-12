@@ -1,0 +1,250 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={MECH476: Engineering Data Analysis in R},
+  pdfauthor={Michael Thill},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{MECH476: Engineering Data Analysis in R}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Chapter 6 Homework: Strings, Dates, and Tidying}
+\author{Michael Thill}
+\date{11 December, 2025}
+
+\begin{document}
+\maketitle
+
+\section{Chapter 6 Homework}\label{chapter-6-homework}
+
+For this homework assignment, you will use data from Twitter that
+include tweets (2011 to 2017) from Colorado senators, which can be
+downloaded from Canvas. Just FYI---some tweets were cut off before
+Twitter's character limit; just work with the data you have. The
+original data are from
+\href{https://github.com/fivethirtyeight/data/tree/master/twitter-ratio}{FiveThirtyEight}.
+
+When a question asks you to make a plot, remember to set a theme, title,
+subtitle, labels, colors, etc. It is up to you how to personalize your
+plots, but put in some effort and think about making the plotting
+approach consistent throughout the document. For example, you could use
+the same theme for all plots. I also like to use the subtitle as a place
+for the main summary for the viewer.
+
+\newpage
+
+\subsection{Question 1: Hashtags}\label{question-1-hashtags}
+
+Within a pipeline using the Colorado-only tweet data, select
+\texttt{text} variable and use \texttt{stringr::str\_extract\_all()}
+with a pattern of
+\texttt{"\#(\textbackslash{}\textbackslash{}d\textbar{}\textbackslash{}\textbackslash{}w)+"}
+to extract all of the hashtags from the tweets. This will return a list
+with one element. How many hashtags were used by Colorado senators?
+
+\subsection{Question 2: Fires}\label{question-2-fires}
+
+Colorado is on fire right now and has experienced many wildfires over
+the years. Let's examine senators' tweet activity related to wildfires
+based on hashtags. Using the character vector of hashtags you extracted
+in Question 1, search for the hashtags that include ``fire'' or
+``wildfire''. How many hashtags included ``fire''? How many included
+``wildfire''?
+
+\subsection{Question 3: Wildfires}\label{question-3-wildfires}
+
+Now, let's look at general tweets concerning wildfires. First, subset
+the data to a dataframe that includes tweets containing the word
+``wildfire'' and their corresponding timestamp and user. Specifically,
+(a) select \texttt{text}, \texttt{date}, and \texttt{user} and (b)
+filter to text strings that include the word ``wildfire'' using
+\texttt{dplyr::filter()} and \texttt{stringr::str\_detect()}.
+
+\subsection{Question 4: Senators}\label{question-4-senators}
+
+Which Colorado senator tweets more about wildfires?
+
+\subsection{Question 5: Timing}\label{question-5-timing}
+
+Using the same \texttt{wildfires} dataframe, create a summary table that
+shows the number of tweets containing the word ``wildfire'' by year
+(2011-2017). Which year has the most tweets about wildfires? Why might
+this be the case? (Hint: Think about what happened in the previous
+year.)
+
+\newpage
+
+\subsection{Question 6: Monthly tweets}\label{question-6-monthly-tweets}
+
+Create a bar chart that answers the question: Are Colorado senators more
+active at a certain time of year? Hints: Convert \texttt{month} to a
+factor. Fill by \texttt{user}.
+
+\newpage
+
+\subsection{Question 7: Hourly tweets}\label{question-7-hourly-tweets}
+
+Create a histogram of tweets by hour of day to visualize when our
+senators are tweeting.
+
+\newpage
+
+\section{Appendix}\label{appendix}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# set global options for figures, code, warnings, and messages}
+\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{fig.width=}\DecValTok{6}\NormalTok{, }\AttributeTok{fig.height=}\DecValTok{4}\NormalTok{, }\AttributeTok{fig.path=}\StringTok{"../figs/"}\NormalTok{,}
+                      \AttributeTok{echo=}\ConstantTok{FALSE}\NormalTok{, }\AttributeTok{warning=}\ConstantTok{FALSE}\NormalTok{, }\AttributeTok{message=}\ConstantTok{FALSE}\NormalTok{)}
+
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\FunctionTok{library}\NormalTok{(lubridate)}
+\FunctionTok{library}\NormalTok{(kableExtra)}
+
+
+\NormalTok{twitter\_raw\_data }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"../data/senators.csv"}\NormalTok{)}
+
+\NormalTok{tweets }\OtherTok{\textless{}{-}}\NormalTok{ twitter\_raw\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(created\_at, text, user, state) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{date =}\NormalTok{ created\_at) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{text =} \FunctionTok{str\_to\_lower}\NormalTok{(text))}
+
+\NormalTok{co\_tweets }\OtherTok{\textless{}{-}}\NormalTok{ tweets }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(state }\SpecialCharTok{==} \StringTok{"CO"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{date\_parsed =} \FunctionTok{mdy\_hm}\NormalTok{(date),}
+    \AttributeTok{year\_num =} \FunctionTok{year}\NormalTok{(date\_parsed),}
+    \AttributeTok{month\_name =} \FunctionTok{month}\NormalTok{(date\_parsed, }\AttributeTok{label =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{abbr =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{hour\_of\_day =} \FunctionTok{hour}\NormalTok{(date\_parsed)}
+\NormalTok{  )}
+
+
+\CommentTok{\# wildfire hashtag list}
+\CommentTok{\# filter to tweets concerning wildfires}
+\CommentTok{\# number of wildfire tweets by senator}
+\CommentTok{\# number of wildfire tweets by year }
+\CommentTok{\# create plot of tweets by month and user}
+\CommentTok{\# create plot of cumulative hourly tweets by senator}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
